@@ -1,0 +1,59 @@
+import static java.lang.Math.random;
+
+final public class Coordinate {
+    final private double x;
+    final private double y;
+
+    static double randomWithRange(double min, double max) {
+        double range = (max - min);
+        return (Math.random() * range) + min;
+    }
+    
+    Coordinate() {
+        this.x = randomWithRange(-1.0, 1.0);
+        this.y = randomWithRange(-1.0, 1.0);
+    }
+    Coordinate(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    Coordinate(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public double getX() { return this.x;}
+    public double getY() { return this.y;}
+    
+    public Coordinate add(Coordinate p) {
+        return new Coordinate(this.x + p.x, this.y + p.y);
+    }
+    public Coordinate scale(int width, int height) {
+        return new Coordinate((this.x + 1) * width / 2,
+                              (this.y + 1) * height / 2);
+    }
+
+    public Coordinate integerize() {
+        return new Coordinate((int) this.x,
+                              (int) this.y);
+    }
+    public String toString() {
+        return "(" + this.x + "," + this.y + ")";
+    }
+    
+    /*
+    public Matrix toMatrix() {
+        double[][] m = {{this.x},{this.y}};
+        return Matrix(m);
+    }
+    */
+    public static void main(String[] args){
+        Coordinate p1 = new Coordinate(5,5);
+        Coordinate p2 = new Coordinate(6,7);
+        System.out.println(p1.add(p2));
+        Coordinate p3 = new Coordinate();
+        System.out.println(p3);
+    }
+}
+
