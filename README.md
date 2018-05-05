@@ -1,4 +1,4 @@
-# jifs: A Java Iterated Function System
+# jifs: Java Iterated Function System
 
 
 ## Motivation

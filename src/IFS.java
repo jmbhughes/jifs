@@ -89,6 +89,9 @@ public class IFS {
         return this.transforms.get(i);
     }
 
+    /**
+     * create a string version
+     */
     public String toString() {
         String out = "";
         out += "transform: \n";
@@ -103,6 +106,7 @@ public class IFS {
         }
         return out;
     }
+    
     /** 
      * testing main
      */
