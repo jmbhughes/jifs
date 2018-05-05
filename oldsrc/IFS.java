@@ -35,9 +35,6 @@ public class IFS {
      * @param probabilities probability of selecting transform, must sum to 1.0
      */
     IFS(Vector<Transform> transforms, Vector<Double> probabilities){
-        if (transforms.size() != probabilities.size()) {
-            throw new RuntimeException("Transforms and probabilities must be the same size");
-        }
         this.transforms = transforms;
         this.probabilities = probabilities;
         assert checkProbability() : "probability list must sum to 1.0";
@@ -89,36 +86,22 @@ public class IFS {
         return this.transforms.get(i);
     }
 
-    public String toString() {
-        String out = "";
-        out += "transform: \n";
-        int i = 0;
-        for (Transform t : transforms) {
-            out += "\t";
-            out += t;
-            out += " at ";
-            out += (int)(100 * probabilities.get(i));
-            out += "%\n";
-            i += 1;
-        }
-        return out;
-    }
     /** 
      * testing main
      */
     public static void main(String[] args){
         System.out.println("Test of IFS");
 
-        Matrix shrink = new Matrix(new double[][]{{0.5, 0.0}, {0.0, 0.5}});
-        AffineTransform t1 = new AffineTransform(shrink, new Matrix(0.0,0.0));
-        AffineTransform t2 = new AffineTransform(shrink, new Matrix(0.5,0.0));
-        AffineTransform t3 = new AffineTransform(shrink, new Matrix(0.0,0.5));
+        TwoDMatrix shrink = new TwoDMatrix(0.5, 0.0, 0.0, 0.5);
+        AffineTransform t1 = new AffineTransform(shrink, new Coordinate(0.0,0.0));
+        AffineTransform t2 = new AffineTransform(shrink, new Coordinate(0.5,0.0));
+        AffineTransform t3 = new AffineTransform(shrink, new Coordinate(0.0,0.5));
         Vector<Transform> transforms =  new Vector<Transform>();
         transforms.add(t1);
         transforms.add(t2);
         transforms.add(t3);
         IFS system = new IFS(transforms);
-        Matrix p = new Matrix(0.041462, 0.408642);
+        Coordinate p = new Coordinate(0.041462, 0.408642);
         for(int i=0; i < 10000; i+=1) {
             System.out.println(p);
             Transform t = system.chooseTransform();

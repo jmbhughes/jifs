@@ -50,7 +50,7 @@ abstract class Transform {
      * @param p starting point
      * @return location after starting from <code> p </code> 
      */
-    abstract public Matrix transform(Matrix p);
+    abstract public Coordinate transform(Coordinate p);
 
     /**
      * simple string method

@@ -11,12 +11,13 @@ import java.awt.Color;
  * This is a probabilistic approach. A set of random points is selected 
  * and iterated forward. These characterize the behavior of the iterated
  * function system without as much computational work. 
+ * @author J. Marcus Hughes
  */
 public class RandomIFSEvaluator extends IFSEvaluator {
     IFS ifs;
     int numPoints;
     int iterations;
-
+    Vector<Vector<Matrix>> results;
     /** Set up the random iterated function system evaluator
      * @param ifs an initialized iterated function system
      * @param numPoints how many randomly selected initial starting locations to run
@@ -32,40 +33,64 @@ public class RandomIFSEvaluator extends IFSEvaluator {
     }
 
     /**
-     * Simulate running to create an image of width by height
-     * @param width how many pixels wide the image should be 
-     * @param height how many pixels high the region is
-     */ 
-    public void run(int width, int height) {
-        Color c = new Color(255,255,255); // all regions are white
-        int rgb = c.getRGB();
-        BufferedImage img = new BufferedImage(width, height,
-                                              BufferedImage.TYPE_INT_RGB);
+     * Simulate running on a single point
+     * @param p the initial point
+     */
+    public Vector<Matrix> runPoint(Matrix p) {
+        Vector<Matrix> ps = new Vector<Matrix>();
+        ps.add(p);
+        for (int it = 0; it < this.iterations; it++) {
+            Transform t = ifs.chooseTransform();
+            p = t.transform(p);
+            ps.add(p);
+        }
+        return ps;
+    }
 
-        // for every requested point
-        for(int point=0; point < this.numPoints; point++) {
-            Coordinate p = new Coordinate(); // random in [-1,1] X [-1,1]
+    /**
+     * Simulate running on many points
+     */
+    public Vector<Vector<Matrix>> run() {
+        Vector<Vector<Matrix>> result = new Vector<Vector<Matrix>>();
+        for (int it = 0; it < this.numPoints; it++) {
+            Matrix p = Matrix.randomPoint();
+            result.add(runPoint(p));
+        }
+        this.results = result;
+        return result;        
+    }
 
-            // iterate it forward the requested iteration count
-            for(int iteration=0; iteration < this.iterations; iteration++) {
-                // each time pick a random transformation and evaluate it
-                Transform t = this.ifs.chooseTransform();
-                p = t.transform(p);
-                if (iteration > 25) {
-                    Coordinate pix = p.scale(width, height).integerize();
-                    img.setRGB((int)pix.getX(), (int)pix.getY(), rgb);
-                }
-            }
+    /**
+     * Plot
+     */
+    public void plot(String filename, int width, int height) {
+        Image img = new Image(width, height, -1.0, 1.0, -1.0, 1.0);
+        //Vector<Vector<Matrix>> results = run();
+        for(Vector<Matrix> r: results) {            
+            img.plot(r.lastElement());
+        }
+        img.save(filename);
+    }
 
-            // save in a silly location
-            try {
-                File outputfile = new File("image.jpg");
-                ImageIO.write(img, "jpg", outputfile);
-            }
-            catch(Exception e) {
-                e.printStackTrace();
-            }
-        }        
+    public void plot(String filename, int width, int height, int iteration) {
+        assert iteration < iterations : "not a valid iteration number";
+        Image img = new Image(width, height, -1.0, 1.0, -1.0, 1.0);
+        Vector<Vector<Matrix>> results = run();
+        for(Vector<Matrix> r: results) {            
+            img.plot(r.get(iteration));
+        }
+        img.save(filename);
+    }
+
+    public void plot(String filename, int width, int height, int iteration,
+                     double xmin, double xmax, double ymin, double ymax) {
+        assert iteration < iterations : "not a valid iteration number";
+        Image img = new Image(width, height, xmin, xmax, ymin, ymax);
+        Vector<Vector<Matrix>> results = run();
+        for(Vector<Matrix> r: results) {            
+            img.plot(r.get(iteration));
+        }
+        img.save(filename);
     }
 
     /** 
@@ -73,17 +98,61 @@ public class RandomIFSEvaluator extends IFSEvaluator {
      */ 
     public static void main(String[] args) {
         System.out.println("Test of random ifs evaluator");
-        TwoDMatrix shrink = new TwoDMatrix(0.5, 0.0, 0.0, 0.5);
-        AffineTransform t1 = new AffineTransform(shrink, new Coordinate(0.0,0.0));
-        AffineTransform t2 = new AffineTransform(shrink, new Coordinate(0.5,0.0));
-        AffineTransform t3 = new AffineTransform(shrink, new Coordinate(0.0,0.5));
         Vector<Transform> transforms = new Vector<Transform>();
+        Vector<Double> probabilities = new Vector<Double>();
+
+        //Sierpinski triangle
+        /*
+        Matrix shrink = new Matrix(0.5, 0.0, 0.0, 0.5);
+        AffineTransform t1 = new AffineTransform(shrink, new Matrix(0.0,0.0));
+        AffineTransform t2 = new AffineTransform(shrink, new Matrix(1.0,0.0));
+        AffineTransform t3 = new AffineTransform(shrink, new Matrix(0.0,1.0));
         transforms.add(t1);
+        probabilities.add(1.0/3.0);
         transforms.add(t2);
+        probabilities.add(1.0/3.0);
         transforms.add(t3);
-        IFS system = new IFS(transforms);
-        RandomIFSEvaluator ifsRunner = new RandomIFSEvaluator(system, 1000, 100);
-        ifsRunner.run(1000,1000);
+        probabilities.add(1.0/3.0);
+        */
+
+        
+        // Barnsley Fern
+        //stem
+        AffineTransform t1 = new AffineTransform(new Matrix(0.0, 0.0, 0.0, 0.16),
+                                                 new Matrix(0.0, 0.0));
+        transforms.add(t1);
+        probabilities.add(0.01);
+        
+        //smaller leaflets
+        AffineTransform t2 = new AffineTransform(new Matrix(0.85, 0.04, -0.04, 0.85),
+                                                 new Matrix(0.0, 1.6));
+        transforms.add(t2);
+        probabilities.add(0.85);
+
+        //largest left leaflet
+        AffineTransform t3 = new AffineTransform(new Matrix(0.20, -0.26, 0.23, 0.22),
+                                                 new Matrix(0.0, 1.6));
+        transforms.add(t3);
+        probabilities.add(0.07);
+        
+
+        //largest right leaflet
+        AffineTransform t4 = new AffineTransform(new Matrix(-0.15, 0.28, 0.26, 0.24),
+                                                 new Matrix(0.0, 0.44));
+        transforms.add(t4);
+        probabilities.add(0.07);
+        
+
+        IFS system = new IFS(transforms, probabilities);
+
+        RandomIFSEvaluator ifsRunner = new RandomIFSEvaluator(system, 10000, 100);
+        ifsRunner.run();
+        System.out.println("FINISHED RUNNING!");
+        for (int i = 0; i < 100; i+=1){
+            System.out.println(i);
+            String fn = String.format("imgs/trial%03d.jpeg", i, 0.0, 3.0, 0.0, 3.0);
+            ifsRunner.plot(fn, 500, 500, i);
+        }
     }
     
 }
