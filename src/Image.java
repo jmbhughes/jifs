@@ -60,7 +60,7 @@ public class Image {
         assert x > xmin && x < xmax && y > ymin && y < ymax : "(x,y) not in range";
         double dx = x - xmin;
         double dy = y - ymin;
-        return new int[]{(int)(dx * dxpp), (int)(dy * dypp)};
+        return new int[]{(int)(dx * dxpp), height - (int)(dy * dypp)};
     }
 
     /**
@@ -76,7 +76,8 @@ public class Image {
         if (x > xmin && x < xmax && y > ymin && y < ymax) {
             // if not in plotting range do nothing
             int[] ij = transform(x, y);
-            img.setRGB(ij[0], ij[1], rgb);
+            if(ij[0] > 0 && ij[1] > 0 && ij[0] < width && ij[1] < height) 
+                img.setRGB(ij[0], ij[1], rgb);
         }
     }
 
@@ -99,6 +100,8 @@ public class Image {
     public static void main(String args[]) {
         Image img = new Image(500, 500, -1.0, 1.0, -1.0, 1.0);
         img.plot(new Matrix(0.0, 0.0));
+        img.plot(new Matrix(0.5, 0.0));
+        img.plot(new Matrix(0.0, -0.25));
         img.save("image.jpg");
     }
 }

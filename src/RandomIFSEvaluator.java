@@ -114,21 +114,20 @@ public class RandomIFSEvaluator extends IFSEvaluator {
         Vector<Double> probabilities = new Vector<Double>();
 
         //Sierpinski triangle
-        /*
+
         Matrix shrink = new Matrix(0.5, 0.0, 0.0, 0.5);
         AffineTransform t1 = new AffineTransform(shrink, new Matrix(0.0,0.0));
-        AffineTransform t2 = new AffineTransform(shrink, new Matrix(1.0,0.0));
-        AffineTransform t3 = new AffineTransform(shrink, new Matrix(0.0,1.0));
+        AffineTransform t2 = new AffineTransform(shrink, new Matrix(0.5,0.0));
+        AffineTransform t3 = new AffineTransform(shrink, new Matrix(0.0,0.5));
         transforms.add(t1);
         probabilities.add(1.0/3.0);
         transforms.add(t2);
         probabilities.add(1.0/3.0);
         transforms.add(t3);
         probabilities.add(1.0/3.0);
-        */
-
         
         // Barnsley Fern
+        /*
         //stem
         AffineTransform t1 = new AffineTransform(new Matrix(0.0, 0.0, 0.0, 0.16),
                                                  new Matrix(0.0, 0.0));
@@ -153,18 +152,18 @@ public class RandomIFSEvaluator extends IFSEvaluator {
                                                  new Matrix(0.0, 0.44));
         transforms.add(t4);
         probabilities.add(0.07);
-        
+        */
 
         IFS system = new IFS(transforms, probabilities);
 
-        RandomIFSEvaluator ifsRunner = new RandomIFSEvaluator(system, 10000, 100);
+        RandomIFSEvaluator ifsRunner = new RandomIFSEvaluator(system, 100000, 100);
         ifsRunner.run();
-        System.out.println("FINISHED RUNNING!");
+        /*System.out.println("FINISHED RUNNING!");
         for (int i = 0; i < 100; i+=1){
             System.out.println(i);
             String fn = String.format("imgs/trial%03d.jpeg", i, 0.0, 3.0, 0.0, 3.0);
             ifsRunner.plot(fn, 500, 500, i);
-        }
-    }
-    
+            }*/
+        ifsRunner.plot("test.jpeg", 500, 500, 100, 0.0, 1.0, 0.0, 1.0);
+    }    
 }
