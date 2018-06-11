@@ -89,6 +89,51 @@ public class IFS {
         return this.transforms.get(i);
     }
 
+    public static IFS sierpinskiTriangle() {
+        Vector<Transform> transforms = new Vector<Transform>();
+        Vector<Double> probabilities = new Vector<Double>();
+        Matrix shrink = new Matrix(0.5, 0.0, 0.0, 0.5);
+        AffineTransform t1 = new AffineTransform(shrink, new Matrix(0.0,0.0));
+        AffineTransform t2 = new AffineTransform(shrink, new Matrix(0.5,0.0));
+        AffineTransform t3 = new AffineTransform(shrink, new Matrix(0.0,0.5));
+        transforms.add(t1);
+        probabilities.add(1.0/3.0);
+        transforms.add(t2);
+        probabilities.add(1.0/3.0);
+        transforms.add(t3);
+        probabilities.add(1.0/3.0);
+        return new IFS(transforms, probabilities);
+    }
+
+    public static IFS barnsleyFern() {
+        Vector<Transform> transforms = new Vector<Transform>();
+        Vector<Double> probabilities = new Vector<Double>();
+                //stem
+        AffineTransform t1 = new AffineTransform(new Matrix(0.0, 0.0, 0.0, 0.16),
+                                                 new Matrix(0.0, 0.0));
+        transforms.add(t1);
+        probabilities.add(0.01);
+        
+        //smaller leaflets
+        AffineTransform t2 = new AffineTransform(new Matrix(0.85, 0.04, -0.04, 0.85),
+                                                 new Matrix(0.0, 1.6));
+        transforms.add(t2);
+        probabilities.add(0.85);
+
+        //largest left leaflet
+        AffineTransform t3 = new AffineTransform(new Matrix(0.20, -0.26, 0.23, 0.22),
+                                                 new Matrix(0.0, 1.6));
+        transforms.add(t3);
+        probabilities.add(0.07);
+        
+        //largest right leaflet
+        AffineTransform t4 = new AffineTransform(new Matrix(-0.15, 0.28, 0.26, 0.24),
+                                                 new Matrix(0.0, 0.44));
+        transforms.add(t4);
+        probabilities.add(0.07);
+        return new IFS(transforms, probabilities);
+    }
+
     /**
      * create a string version
      */

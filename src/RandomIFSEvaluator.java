@@ -14,9 +14,7 @@ import java.awt.Color;
  * @author J. Marcus Hughes
  */
 public class RandomIFSEvaluator extends IFSEvaluator {
-    IFS ifs;
     int numPoints;
-    int iterations;
     Vector<Vector<Matrix>> results;
     /** Set up the random iterated function system evaluator
      * @param ifs an initialized iterated function system
@@ -25,6 +23,7 @@ public class RandomIFSEvaluator extends IFSEvaluator {
      * @see IFS
      */
     RandomIFSEvaluator(IFS ifs, int numPoints, int iterations) {
+        super(ifs, iterations);
         assert numPoints > 0 : "numPoints must be positive";
         assert iterations > 0 : "iterations must be positive";
         this.ifs = ifs;
@@ -60,103 +59,19 @@ public class RandomIFSEvaluator extends IFSEvaluator {
         return result;        
     }
 
-    /**
-     * Plot the IFS in region (-1.0, 1.0) x (-1.0, 1.0) for last iteration
-     * @param filename where to save image
-     * @param width number of pixels wide for image
-     * @param height number of pixels high for image
-     */
-    public void plot(String filename, int width, int height) {
-        plot(filename, width, height, iterations, -1.0, 1.0, -1.0, 1.0);
-    }
-
-    /**
-     * Plot the IFS in region (-1.0, 1.0) x (-1.0, 1.0) for requested iteration
-     * @param filename where to save image
-     * @param width number of pixels wide for image
-     * @param height number of pixels high for image
-     * @param iteration step to plot
-     */
-    public void plot(String filename, int width, int height, int iteration) {
-        assert iteration < iterations : "not a valid iteration number";
-        plot(filename, width, height, iteration, -1.0, 1.0, -1.0, 1.0);
-    }
-
-    /**
-     * Plot the IFS in requested region for requested iteration
-     * @param filename where to save image
-     * @param width number of pixels wide for image
-     * @param height number of pixels high for image
-     * @param iteration step to plot
-     * @param xmin least x value to show
-     * @param xmax greatest x value to show
-     * @param ymin least y value to show
-     * @param ymax greatest y value to show
-     */
-    public void plot(String filename, int width, int height, int iteration,
-                     double xmin, double xmax, double ymin, double ymax) {
-        assert iteration < iterations : "not a valid iteration number";
-        Image img = new Image(width, height, xmin, xmax, ymin, ymax);
-        Vector<Vector<Matrix>> results = run();
-        for(Vector<Matrix> r: results) {            
-            img.plot(r.get(iteration));
-        }
-        img.save(filename);
-    }
-
-    
     /** 
      * testing main
      */ 
     public static void main(String[] args) {
         System.out.println("Test of random ifs evaluator");
-        Vector<Transform> transforms = new Vector<Transform>();
-        Vector<Double> probabilities = new Vector<Double>();
 
-        //Sierpinski triangle
-
-        Matrix shrink = new Matrix(0.5, 0.0, 0.0, 0.5);
-        AffineTransform t1 = new AffineTransform(shrink, new Matrix(0.0,0.0));
-        AffineTransform t2 = new AffineTransform(shrink, new Matrix(0.5,0.0));
-        AffineTransform t3 = new AffineTransform(shrink, new Matrix(0.0,0.5));
-        transforms.add(t1);
-        probabilities.add(1.0/3.0);
-        transforms.add(t2);
-        probabilities.add(1.0/3.0);
-        transforms.add(t3);
-        probabilities.add(1.0/3.0);
+        IFS system = IFS.sierpinskiTriangle();
+        int iterations = 20;
+        //int numPoints = 100000;
+        int numPoints = 10000;
+        //IFS system = IFS.barnsleyFern();
         
-        // Barnsley Fern
-        /*
-        //stem
-        AffineTransform t1 = new AffineTransform(new Matrix(0.0, 0.0, 0.0, 0.16),
-                                                 new Matrix(0.0, 0.0));
-        transforms.add(t1);
-        probabilities.add(0.01);
-        
-        //smaller leaflets
-        AffineTransform t2 = new AffineTransform(new Matrix(0.85, 0.04, -0.04, 0.85),
-                                                 new Matrix(0.0, 1.6));
-        transforms.add(t2);
-        probabilities.add(0.85);
-
-        //largest left leaflet
-        AffineTransform t3 = new AffineTransform(new Matrix(0.20, -0.26, 0.23, 0.22),
-                                                 new Matrix(0.0, 1.6));
-        transforms.add(t3);
-        probabilities.add(0.07);
-        
-
-        //largest right leaflet
-        AffineTransform t4 = new AffineTransform(new Matrix(-0.15, 0.28, 0.26, 0.24),
-                                                 new Matrix(0.0, 0.44));
-        transforms.add(t4);
-        probabilities.add(0.07);
-        */
-
-        IFS system = new IFS(transforms, probabilities);
-
-        RandomIFSEvaluator ifsRunner = new RandomIFSEvaluator(system, 100000, 100);
+        RandomIFSEvaluator ifsRunner = new RandomIFSEvaluator(system, numPoints, iterations);
         ifsRunner.run();
         /*System.out.println("FINISHED RUNNING!");
         for (int i = 0; i < 100; i+=1){
@@ -164,6 +79,6 @@ public class RandomIFSEvaluator extends IFSEvaluator {
             String fn = String.format("imgs/trial%03d.jpeg", i, 0.0, 3.0, 0.0, 3.0);
             ifsRunner.plot(fn, 500, 500, i);
             }*/
-        ifsRunner.plot("test.jpeg", 500, 500, 100, 0.0, 1.0, 0.0, 1.0);
+        ifsRunner.plot("test.jpeg", 500, 500, iterations, 0.0, 1.0, 0.0, 1.0);
     }    
 }

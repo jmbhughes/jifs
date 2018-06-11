@@ -11,10 +11,10 @@ public class MinkowskiDimension {
     Vector<Integer> counts;
 
     /**
-     * TODO
-     */
-    MinkowskiDimension(int dimension, Vector<Vector<Double>> pointSet) {
-        this.dimension = dimension;
+     * Creates a Minkowski dimension evaluator 
+     */                                                                       
+    MinkowskiDimension(Vector<Vector<Double>> pointSet) {
+        this.dimension = pointSet[0].size();
         this.pointSet = pointSet;
         for (Vector<Double> v : pointSet) {
             if (v.size() != dimension) {
@@ -34,6 +34,6 @@ public class MinkowskiDimension {
      * testing function
      */
     public static void main(String[] args) {
-        System.out.println("NOT FINISHED")
+        System.out.println("NOT FINISHED");
     }
 }

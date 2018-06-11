@@ -64,6 +64,8 @@ public class AffineTransform extends Transform {
                              this.shift.get(1,1),
                              this.shift.get(2,1));
     }
+
+
     
     /**
      * A simple testing script that runs part of a Sierpinski Triangle
