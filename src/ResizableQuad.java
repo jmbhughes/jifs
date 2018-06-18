@@ -1,4 +1,4 @@
-//package com.javacodegeeks.snippets.desktop;
+ //package com.javacodegeeks.snippets.desktop;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -13,6 +13,7 @@ import java.awt.Polygon;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JComponent;
 
 /**
  * A resizable quadrilateral that can be adjusted with cursors. This is used to control the 
@@ -66,6 +67,9 @@ public class ResizableQuad extends JPanel {
         this(x, y, size, new Color(0,0,255), new Color(0,0,0));
     }
 
+    public boolean contains(int x, int y) {
+        return myPoly.contains(x, y);
+    }
 
     /**
      * Paint the quadrilateral initially
@@ -84,7 +88,6 @@ public class ResizableQuad extends JPanel {
         graphics2d.fill(myPoly);
 
         graphics2d.setColor(cursorColor);
-        graphics2d.setColor(new Color(200, 0, 200));
         graphics2d.draw(upperLeftCursor);
         graphics2d.fill(upperLeftCursor);
     }
@@ -105,7 +108,6 @@ public class ResizableQuad extends JPanel {
             y = event.getY();
         }
 
-
         /**
          * behavior upon dragging event
          * @override
@@ -114,9 +116,8 @@ public class ResizableQuad extends JPanel {
             // get amount of change
             int dx = event.getX() - x;            
             int dy = event.getY() - y;
-
-
-            if (upperLeftCursor.getBounds2D().contains(x,y)) { // if on the resize cursor                
+            
+            if (upperLeftCursor.getBounds2D().contains(x,y)) { // if on the resize cursor               
                 myPoly.xpoints[0] += dx;
                 myPoly.ypoints[0] += dy;
                 myPoly.xpoints[1] += dx;
@@ -160,8 +161,14 @@ public class ResizableQuad extends JPanel {
     public static void main(String[] args) {
         JFrame jFrame = new JFrame("Moving and Scaling");
         ResizableQuad resi = new ResizableQuad(90, 90, 90);
+        resi.setOpaque(false);
+        ResizableQuad resi2 = new ResizableQuad(300, 90, 90);
+        resi2.setOpaque(false);
+
         resi.setDoubleBuffered(true);        
         jFrame.add(resi);
+        jFrame.add(resi2);
+        resi2.setBounds(300, 90, 390, 180);
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setSize(1000, 1000);
         jFrame.setLocationRelativeTo(null);

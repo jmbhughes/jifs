@@ -14,7 +14,7 @@ public class MinkowskiDimension {
      * Creates a Minkowski dimension evaluator 
      */                                                                       
     MinkowskiDimension(Vector<Vector<Double>> pointSet) {
-        this.dimension = pointSet[0].size();
+        this.dimension = 0; // TODO: pointSet[0].size();
         this.pointSet = pointSet;
         for (Vector<Double> v : pointSet) {
             if (v.size() != dimension) {
